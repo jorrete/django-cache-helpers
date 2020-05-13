@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+VENV_DIR=$DIR/venv
+
+# make folder to store venv
+mkdir -p $VENV_DIR
+
+# if not venv created do it
+if [ ! -f $VENV_DIR/pyvenv.cfg ]; then
+    python3 -m venv $VENV_DIR --copies --clear
+fi
+
+# activate it
+source $VENV_DIR/bin/activate
+
+# install dependencies
+pip install -r $DIR/requirements.txt
