@@ -5,6 +5,7 @@ from django.test import RequestFactory, TestCase
 from django.http import HttpResponse
 from django.core.cache import cache
 from django.core.management import call_command
+from django.conf import settings
 
 from cache_helpers.decorators import cache_page_forever, cache_page
 
@@ -15,6 +16,14 @@ def get_key_func(request, *args, **kwargs):
 
 def current_datetime(request, now):
     return HttpResponse(str(now))
+
+
+settings.CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache_test',
+    }
+}
 
 
 class CachePageDecoratorTest(TestCase):
