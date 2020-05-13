@@ -205,9 +205,11 @@ If it's called without --cache flag it will clear all caches configured in setti
 
 ```bash
 git clone https://github.com/jorrete/django-cache-helpers
-cd django-cache-helpers/myexample
 ./create_venv
 . venv/bin/activate
+cd django-cache-helpers/myexample
+./manage.py migrate
+./manage.py loaddata user
 ./manage.py runserver
 ```
 
