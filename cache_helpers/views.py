@@ -6,7 +6,7 @@ class CachePageMixin(object):
     cache_cache = None
 
     def get_cache_timeout(self, request, *args, **kwargs):
-        if not hasattr(self.cache_timeout, 'cache_timeout'):
+        if not hasattr(self, 'cache_timeout'):
             raise ValueError('Missing cache_timeout attribute')
         return self.cache_timeout
 
@@ -33,7 +33,7 @@ class CachePageForeverMixin(object):
     cache_cache = None
 
     def get_cache_timeout(self, request, *args, **kwargs):
-        if not hasattr(self.cache_timeout, 'cache_timeout'):
+        if not hasattr(self, 'cache_timeout'):
             raise ValueError('Missing cache_timeout attribute')
         return self.cache_timeout
 
