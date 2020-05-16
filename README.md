@@ -213,7 +213,7 @@ git clone https://github.com/jorrete/django-cache-helpers
 cd django-cache-helpers/myexample
 ./manage.py migrate
 ./manage.py loaddata user
-./manage.py runserver
+./manage.py runserver 0.0.0.0:9000
 ```
 
 ### Test
