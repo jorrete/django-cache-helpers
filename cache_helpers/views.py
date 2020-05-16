@@ -10,10 +10,8 @@ class CachePageMixin(object):
             raise ValueError('Missing cache_timeout attribute')
         return self.cache_timeout
 
-    def get_cache_key_func(self, request, *args, **kwargs):
-        if not hasattr(self.cache_timeout, 'cache_key_func'):
-            raise ValueError('Missing cache_key_func attribute')
-        return self.cache_key_func
+    def cache_key_func(self, request, *args, **kwargs):
+        raise NotImplementedError()
 
     def get_cache_cache(self, request, *args, **kwargs):
         return self.cache_cache
@@ -24,7 +22,7 @@ class CachePageMixin(object):
     def dispatch(self, request, *args, **kwargs):
         return cache_page(
             self.get_cache_timeout(),
-            self.get_cache_key_func(),
+            self.get_cache_key_func,
             cache=self.get_cache_cache(),
             key_prefix=self.get_cache_key_prefix()
         )(super().dispatch)(request, *args, **kwargs)
@@ -39,10 +37,8 @@ class CachePageForeverMixin(object):
             raise ValueError('Missing cache_timeout attribute')
         return self.cache_timeout
 
-    def get_cache_key_func(self, request, *args, **kwargs):
-        if not hasattr(self.cache_timeout, 'cache_key_func'):
-            raise ValueError('Missing cache_key_func attribute')
-        return self.cache_key_func
+    def cache_key_func(self, request, *args, **kwargs):
+        raise NotImplementedError()
 
     def get_cache_cache(self, request, *args, **kwargs):
         return self.cache_cache
@@ -53,7 +49,7 @@ class CachePageForeverMixin(object):
     def dispatch(self, request, *args, **kwargs):
         return cache_page_forever(
             self.get_cache_timeout(),
-            self.get_cache_key_func(),
+            self.get_cache_key_func,
             cache=self.get_cache_cache(),
             key_prefix=self.get_cache_key_prefix()
         )(super().dispatch)(request, *args, **kwargs)
