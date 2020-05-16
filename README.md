@@ -12,6 +12,9 @@ Few helpers to have more control over django cache.
 
 ## decorators
 
+Decorators are "compatible" with django.middleware.cache. The can be used at the same time.
+To avoid being cached twice an end up serving always de middleware cache, decorator add flag to the response to "short circuit" the middleware before being cached again.
+
 ### cache_page
 
 ```python
@@ -35,7 +38,7 @@ It's like the cache_page decorator but it expects a funcion as **key_func** argu
 ```python
 # my_app/views.py
 from django.http import HttpResponse
-from cache_helpers.decorators import cache_page
+from cache_helpers.decorators import cache_page_forever
 
 def my_key_func(request):
     return request.path

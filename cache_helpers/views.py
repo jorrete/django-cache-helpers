@@ -53,6 +53,7 @@ class CachePageForeverMixin(object):
     def dispatch(self, request, *args, **kwargs):
         return cache_page_forever(
             self.get_cache_timeout(),
+            self.get_cache_key_func(),
             cache=self.get_cache_cache(),
             key_prefix=self.get_cache_key_prefix()
         )(super().dispatch)(request, *args, **kwargs)
