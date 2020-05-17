@@ -54,7 +54,7 @@ The use of this decorator is to prevent that very expensive requests are ever hi
 This decorator expects same arguments that cache_page but it will be cached forever setting the timeout to None in the cache. Yo still pass timeout because it will used to set the **expire** header (**max-age** will be omitted) in the response object.
 To update the cache you will use a custom command that will use **cache_helpers.request.RequestCommand** mixin (look at example).
 
-The combination of **cache_page_forever** and the custom command will prevent any **cache stampede** and you will offload these heavy requests to a command with a **cron job** or an **asynchronous task**.
+The combination of **cache_page_forever** and the custom command will prevent any **cache stampede**.
 
 ## views
 
