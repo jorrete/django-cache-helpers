@@ -9,12 +9,19 @@
 </head>
 <body>
     <h1>{{title}}</h1>
-    <div>{{user}}</div>
+    <div>{% now "jS F Y H:i:s" %}</div>
+    <div>{{user}} - {{lang}}</div>
     <div>
         <a href="{% url "index" %}">Index</a>
     </div>
     <div>
         <a href="{% url "foo" %}">Foo</a>
+    </div>
+    <div>
+        <a href="{% url "fart" %}">Fart</a>
+    </div>
+    <div>
+        <a href="{% url "bar" %}">Bar</a>
     </div>
 </body>
 </html>

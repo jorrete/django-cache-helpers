@@ -7,3 +7,4 @@ venv/
 .tox/
 .pytest_cache/
 .hypothesis/
+todo.py
