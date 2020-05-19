@@ -19,18 +19,20 @@ def get_session(basic_auth=None, login=None):
     if basic_auth:
         kwargs['auth'] = (basic_auth['username'], basic_auth['password'])
 
-    if login:
-        req = session.get(login['url'], **kwargs)
-        req = session.post(login['url'], data={
+    if login is not None:
+        res = session.get(login['url'], **kwargs)
+        res = session.post(login['url'], allow_redirects=True, data={
             'username': login['username'],
             'password': login['password'],
-            'csrfmiddlewaretoken': req.cookies['csrftoken'],
+            'csrfmiddlewaretoken': res.cookies['csrftoken'],
             'next': login['url'],
         }, **kwargs)
 
-        if req.status_code != 200:
+        # success has history of redirections
+        if not len(res.history):
             raise Exception('Login failed')
         else:
+            print(2)
             logger.info('Login success')
 
     return session
@@ -65,8 +67,8 @@ def _make_request(url, session=None, bust_key=None, basic_auth=None, login=None,
 
 
 def make_request(url, session=None, bust_key=None, basic_auth=None, login=None, lang=None):
+    session = get_session(basic_auth=basic_auth, login=login)
     try:
-        session = get_session(basic_auth=basic_auth, login=login)
         bust_key = str(uuid.uuid4())
         set_cache_bust_status(bust_key)
         return _make_request(
@@ -83,10 +85,10 @@ class RealRequestMixin(BaseRequestMixin):
         return _make_request
 
     def make_requests(self, threads=1, **extra):
+        session = get_session(
+                basic_auth=self.get_request_basic_auth(),
+                login=self.get_request_login())
         try:
-            session = get_session(
-                    basic_auth=self.get_request_basic_auth(),
-                    login=self.get_request_login())
             bust_key = str(uuid.uuid4())
             set_cache_bust_status(bust_key)
             extra['bust_key'] = bust_key

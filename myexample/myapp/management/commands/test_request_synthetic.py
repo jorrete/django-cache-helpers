@@ -2,9 +2,8 @@ from cache_helpers.request.synthetic import SyntheticRequestCommand
 
 
 class Command(SyntheticRequestCommand):
-    request_login = {
-        'username': '',
-    }
+    request_always_anonymous = True
+    request_login = {'username': '', }
     request_langs = ['de', 'it']
     request_threads = 1
     request_urls = [
