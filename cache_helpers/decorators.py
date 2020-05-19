@@ -28,9 +28,9 @@ def _cache_page(timeout,
                 if response.status_code == 200:
                     patch_func(response, timeout)
                     if hasattr(response, 'render') and callable(response.render):
-                        response.add_post_render_callback(
-                            lambda r: cache.set(cache_key, r, timeout)
-                        )
+                        def set_cache(response):
+                            cache.set(cache_key, response, timeout)
+                        response.add_post_render_callback(set_cache)
                     else:
                         cache.set(cache_key, response, timeout)
             setattr(request, '_cache_update_cache', False)

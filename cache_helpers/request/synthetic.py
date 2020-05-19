@@ -7,8 +7,6 @@ from django.contrib.auth import get_user_model
 from django.core.handlers.base import BaseHandler
 from django.test import RequestFactory
 
-from ..utils import threaded_cue
-
 from .helpers import BaseRequestMixin, BaseRequestCommand
 
 
@@ -52,9 +50,11 @@ def url_to_request(url_str, method='get', login=None, lang=None, **extra):
     return request
 
 
-def make_requests(threads=1, urls=[], login=None, lang=None, **kwargs):
+def make_request(url, login=None, langs=None, **kwargs):
     client = BaseHandler()
     client.load_middleware()
+
+    langs = [None] if langs is None else langs
 
     if login is not None and not len(login['username']):
         login = {
@@ -62,9 +62,10 @@ def make_requests(threads=1, urls=[], login=None, lang=None, **kwargs):
             'username': DUMMY_USERNAME,
         }
 
-    def callback(url):
+    for lang in langs:
         request = url_to_request(url, login=login, lang=lang)
         response = client.get_response(request)
+
         if response.status_code == 200:
             logger.info('Request success: {}{}{}'.format(
                 url,
@@ -72,12 +73,11 @@ def make_requests(threads=1, urls=[], login=None, lang=None, **kwargs):
                 ' [username: {}]'.format(login['username']) if login is not None else ''))
         else:
             logger.error('Request error: {}'.format(url))
-    threaded_cue(urls, callback, threads)
 
 
 class SyntheticRequestMixin(BaseRequestMixin):
     def get_request_runner(self):
-        return make_requests
+        return make_request
 
 
 class SyntheticRequestCommand(SyntheticRequestMixin, BaseRequestCommand):
