@@ -32,7 +32,6 @@ def get_session(basic_auth=None, login=None):
         if not len(res.history):
             raise Exception('Login failed')
         else:
-            print(2)
             logger.info('Login success')
 
     return session
