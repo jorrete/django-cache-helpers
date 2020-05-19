@@ -50,11 +50,9 @@ def url_to_request(url_str, method='get', login=None, lang=None, **extra):
     return request
 
 
-def make_request(url, login=None, langs=None, **kwargs):
+def make_request(url, login=None, lang=None, **kwargs):
     client = BaseHandler()
     client.load_middleware()
-
-    langs = [None] if langs is None else langs
 
     if login is not None and not len(login['username']):
         login = {
@@ -62,17 +60,18 @@ def make_request(url, login=None, langs=None, **kwargs):
             'username': DUMMY_USERNAME,
         }
 
-    for lang in langs:
-        request = url_to_request(url, login=login, lang=lang)
-        response = client.get_response(request)
+    request = url_to_request(url, login=login, lang=lang)
+    response = client.get_response(request)
 
-        if response.status_code == 200:
-            logger.info('Request success: {}{}{}'.format(
-                url,
-                ' [lang: {}]'.format(lang) if lang is not None else '',
-                ' [username: {}]'.format(login['username']) if login is not None else ''))
-        else:
-            logger.error('Request error: {}'.format(url))
+    if response.status_code == 200:
+        logger.info('Request success: {}{}{}'.format(
+            url,
+            ' [lang: {}]'.format(lang) if lang is not None else '',
+            ' [username: {}]'.format(login['username']) if login is not None else ''))
+    else:
+        logger.error('Request error: {}'.format(url))
+
+    return response
 
 
 class SyntheticRequestMixin(BaseRequestMixin):

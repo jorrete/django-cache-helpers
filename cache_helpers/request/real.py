@@ -36,38 +36,40 @@ def get_session(basic_auth=None, login=None):
     return session
 
 
-def _make_request(url, session, bust_key, basic_auth=None, login=None, langs=None):
+def _make_request(url, session, bust_key, basic_auth=None, login=None, lang=None):
     kwargs = {
         'cookies': {},
         'headers': {},
     }
 
-    for lang in langs:
+    if lang:
         kwargs['cookies'][settings.LANGUAGE_COOKIE_NAME] = lang
-        try:
-            kwargs['headers']['bust'] = bust_key
 
-            if basic_auth:
-                kwargs['auth'] = (basic_auth['username'], basic_auth['password'])
+    try:
+        kwargs['headers']['bust'] = bust_key
 
-            session.get(url, **kwargs)
-            logger.info('Request success: {}{}{}'.format(
-                url,
-                ' [lang: {}]'.format(lang) if lang is not None else '',
-                ' [username: {}]'.format(login['username']) if login is not None else ''))
-        except Exception as e:
-            logger.error('Request error: {}'.format(url))
-            raise e
+        if basic_auth:
+            kwargs['auth'] = (basic_auth['username'], basic_auth['password'])
+
+        response = session.get(url, **kwargs)
+        logger.info('Request success: {}{}{}'.format(
+            url,
+            ' [lang: {}]'.format(lang) if lang is not None else '',
+            ' [username: {}]'.format(login['username']) if login is not None else ''))
+    except Exception:
+        logger.error('Request error: {}'.format(url))
+
+    return response
 
 
-def make_request(url, session=None, bust_key=None, basic_auth=None, login=None, langs=None):
+def make_request(url, session=None, bust_key=None, basic_auth=None, login=None, lang=None):
     try:
         session = get_session(basic_auth=basic_auth, login=login)
         bust_key = str(uuid.uuid4())
         set_cache_bust_status(bust_key)
-        _make_request(
+        return _make_request(
                 url, session, bust_key,
-                basic_auth=basic_auth, login=login, langs=langs)
+                basic_auth=basic_auth, login=login, lang=lang)
     except Exception as e:
         raise e
     finally:

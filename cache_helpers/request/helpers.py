@@ -43,15 +43,17 @@ class BaseRequestMixin:
 
         if always_anonymous and None not in logins:
             logins.insert(0, None)
+        langs = self.get_request_langs()
 
         def callback(url):
-            for login in logins:
-                runner(
-                    url=url,
-                    basic_auth=self.get_request_basic_auth(),
-                    login=login,
-                    langs=self.get_request_langs(),
-                    **extra)
+            for lang in (langs if len(langs) else [None]):
+                for login in logins:
+                    runner(
+                        url=url,
+                        basic_auth=self.get_request_basic_auth(),
+                        login=login,
+                        lang=lang,
+                        **extra)
 
         threaded_cue(urls, callback, threads)
         return len(urls)
