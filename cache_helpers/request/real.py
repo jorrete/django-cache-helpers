@@ -36,7 +36,9 @@ def get_session(basic_auth=None, login=None):
     return session
 
 
-def _make_request(url, session, bust_key, basic_auth=None, login=None, lang=None):
+def _make_request(url, session=None, bust_key=None, basic_auth=None, login=None, lang=None):
+    session = session if session is not None else get_session(basic_auth=basic_auth, login=login)
+
     kwargs = {
         'cookies': {},
         'headers': {},
@@ -46,7 +48,7 @@ def _make_request(url, session, bust_key, basic_auth=None, login=None, lang=None
         kwargs['cookies'][settings.LANGUAGE_COOKIE_NAME] = lang
 
     try:
-        kwargs['headers']['bust'] = bust_key
+        kwargs['headers']['bust'] = bust_key if bust_key is not None else ''
 
         if basic_auth:
             kwargs['auth'] = (basic_auth['username'], basic_auth['password'])
