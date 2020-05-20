@@ -21,7 +21,7 @@ def _cache_page(timeout,
             cache = caches[_cache_alias]
             cache_key = key_func(request)
             response = cache.get(cache_key)
-            # if CACHE_HELPERS_DEBUG:
+
             do_cache = (
                 not response
                 or (check_func is not None and check_func(request))
