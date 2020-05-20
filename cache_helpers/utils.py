@@ -34,7 +34,6 @@ def threaded_cue(cue, callback, threads):
     def process_chunk(begining, end, worker_num):
         for index, item in enumerate(cue[begining:end]):
             real_index = (begining + index) if begining > 0 else index
-            print('worker [{}]'.format(worker_num), real_index)
             result = callback(item)
             if result:
                 cue[real_index] = result
