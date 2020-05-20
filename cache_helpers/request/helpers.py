@@ -72,7 +72,7 @@ class BaseRequestCommand(BaseRequestMixin, BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--threads', nargs='?',
                             type=int, default=1,
-                            help='Number of threass')
+                            help='Number of threads')
 
     def handle(self, *args, **options):
         try:
