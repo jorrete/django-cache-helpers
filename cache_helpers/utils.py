@@ -41,10 +41,16 @@ def threaded_cue(cue, callback, threads):
     CHUNK_SIZE = math.ceil(len(cue) / threads)
     end = 0
 
+    threads_refs = []
+
     for i in range(threads):
         begining = end
         end = begining + CHUNK_SIZE
         t = threading.Thread(target=process_chunk, args=(begining, end if end < len(cue) else len(cue), i))
         t.start()
+        threads_refs.append(t)
+
+    for i in threads_refs:
+        t.join()
 
     return cue
