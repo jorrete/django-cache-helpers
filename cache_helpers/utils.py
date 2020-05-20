@@ -31,9 +31,10 @@ def check_bust_header(request):
 
 # TODO avoid list user generator
 def threaded_cue(cue, callback, threads):
-    def process_chunk(begining, end):
+    def process_chunk(begining, end, worker_num):
         for index, item in enumerate(cue[begining:end]):
             real_index = (begining + index) if begining > 0 else index
+            print('worker [{}]'.format(worker_num), real_index)
             result = callback(item)
             if result:
                 cue[real_index] = result
@@ -44,8 +45,7 @@ def threaded_cue(cue, callback, threads):
     for i in range(threads):
         begining = end
         end = begining + CHUNK_SIZE
-        t = threading.Thread(target=process_chunk, args=(begining, end if end < len(cue) else len(cue)))
+        t = threading.Thread(target=process_chunk, args=(begining, end if end < len(cue) else len(cue), i))
         t.start()
-        t.join()
 
     return cue
