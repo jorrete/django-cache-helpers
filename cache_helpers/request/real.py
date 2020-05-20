@@ -14,14 +14,14 @@ logger = logging.getLogger(__name__)
 
 def get_session(basic_auth=None, login=None):
     session = requests.session()
-    session.headers.update({'referer': login['referer']})
 
     kwargs = {}
 
     if basic_auth:
         kwargs['auth'] = (basic_auth['username'], basic_auth['password'])
-    session.get(login['url'], **kwargs)
+
     if login is not None:
+        session.headers.update({'referer': login.get('referer')})
         res = session.get(login['url'], **kwargs)
         res = session.post(login['url'], allow_redirects=True, data={
             'username': login['username'],
@@ -85,16 +85,16 @@ class RealRequestMixin(BaseRequestMixin):
     def get_request_runner(self):
         return _make_request
 
-    def make_requests(self, threads=1, **extra):
+    def _make_requests(self, threads=1, **extra):
         session = get_session(
                 basic_auth=self.get_request_basic_auth(),
-                login=self.get_request_login())
+                login=extra.get('login', None))
         try:
             bust_key = str(uuid.uuid4())
             set_cache_bust_status(bust_key)
             extra['bust_key'] = bust_key
             extra['session'] = session
-            return super().make_requests(threads=threads, **extra)
+            return super()._make_requests(threads=threads, **extra)
         finally:
             set_cache_bust_status()
 

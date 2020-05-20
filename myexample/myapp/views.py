@@ -9,6 +9,7 @@ from cache_helpers.views import CachePageMixin
 class Mixin(object):
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
+        print('xxxxxxxxxx', self.request.user)
         kwargs.update({
             'user': self.request.user,
             'lang': self.request.LANGUAGE_CODE,
