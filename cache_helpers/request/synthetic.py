@@ -1,5 +1,3 @@
-import logging
-
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -7,10 +5,9 @@ from django.contrib.auth import get_user_model
 from django.core.handlers.base import BaseHandler
 from django.test import RequestFactory
 
+from ..settings import logger
+
 from .helpers import BaseRequestMixin, BaseRequestCommand
-
-
-logger = logging.getLogger(__name__)
 
 
 DUMMY_USERNAME = '__dummy_user__'
