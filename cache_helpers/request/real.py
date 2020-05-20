@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def get_session(basic_auth=None, login=None):
     session = requests.session()
-    session.headers.update({'referer': 'https://dev.hikeorama.com/'})
+    session.headers.update({'referer': login['referer']})
 
     kwargs = {}
 
