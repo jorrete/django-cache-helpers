@@ -147,7 +147,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'INFO',
+        'level': 'DEBUG' if DEBUG else 'INFO',
     },
 }
 
@@ -157,3 +157,4 @@ CACHES = {
         'LOCATION': '/tmp/django_cache',
     },
 }
+CACHE_HELPERS_DEBUG = True

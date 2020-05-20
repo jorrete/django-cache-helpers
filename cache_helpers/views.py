@@ -16,10 +16,6 @@ class CachePageMixin(object):
         return self.cache_alias
 
     def dispatch(self, request, *args, **kwargs):
-        print(
-            self.get_cache_timeout(request),
-            self.cache_key_func,
-            self.get_cache_alias(request))
         return cache_page(
             self.get_cache_timeout(request),
             self.cache_key_func,

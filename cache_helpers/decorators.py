@@ -6,7 +6,7 @@ from django.utils.cache import add_never_cache_headers, patch_response_headers
 from django.utils.http import http_date
 
 from .utils import check_bust_header
-from .settings import CACHE_HELPERS_ALIAS
+from .settings import CACHE_HELPERS_ALIAS, logger
 
 
 def _cache_page(timeout,
@@ -21,9 +21,22 @@ def _cache_page(timeout,
             cache = caches[_cache_alias]
             cache_key = key_func(request)
             response = cache.get(cache_key)
-            if (not response
-                    or (check_func is not None and check_func(request))
-                    or getattr(request, '_bust_cache', False)):
+            # if CACHE_HELPERS_DEBUG:
+            do_cache = (
+                not response
+                or (check_func is not None and check_func(request))
+                or getattr(request, '_bust_cache', False))
+
+            logger.debug(
+                'cache: {} | cache_key: {} | timeout: {} | response: {} | check_func: {} | _bust_cache: {} | SAVE: {}'.format(
+                    cache,
+                    cache_key,
+                    timeout,
+                    response,
+                    (check_func is not None and check_func(request)),
+                    getattr(request, '_bust_cache', False),
+                    do_cache))
+            if do_cache:
                 response = view_func(request, *args, **kwargs)
                 if response.status_code == 200:
                     patch_func(response, timeout)

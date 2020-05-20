@@ -1,15 +1,12 @@
-import logging
 import requests
 import uuid
 
 from django.conf import settings
 
 from ..utils import set_cache_bust_status
+from ..settings import logger
 
 from .helpers import BaseRequestMixin, BaseRequestCommand
-
-
-logger = logging.getLogger(__name__)
 
 
 def get_session(basic_auth=None, login=None):
