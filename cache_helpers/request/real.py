@@ -14,11 +14,13 @@ logger = logging.getLogger(__name__)
 
 def get_session(basic_auth=None, login=None):
     session = requests.session()
+    session.headers.update({'referer': 'https://dev.hikeorama.com/'})
+
     kwargs = {}
 
     if basic_auth:
         kwargs['auth'] = (basic_auth['username'], basic_auth['password'])
-
+    session.get(login['url'], **kwargs)
     if login is not None:
         res = session.get(login['url'], **kwargs)
         res = session.post(login['url'], allow_redirects=True, data={

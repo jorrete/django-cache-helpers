@@ -27,10 +27,12 @@ class CustomRequestFactory(RequestFactory):
 
 def url_to_request(url_str, method='get', login=None, lang=None, **extra):
     url = urlparse(url_str)
+
     factory = CustomRequestFactory(
         secure=True if url.scheme == 'https' else False,
-        SERVER_PORT=url.port,
-        SERVER_NAME=url.hostname)
+        SERVER_NAME=url.hostname,
+        **{'SERVER_PORT': url.port} if url.port is not None else {})
+
     request = getattr(factory, method)(
             url_str.replace('{}://{}'.format(url.scheme, url.netloc), ''),
             **extra)
@@ -38,7 +40,6 @@ def url_to_request(url_str, method='get', login=None, lang=None, **extra):
     # if i18n_patterns(*urls, prefix_default_language=True) will be ignored
     if lang is not None:
         request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = lang
-
     if login is not None:
         User = get_user_model()
         user = (
