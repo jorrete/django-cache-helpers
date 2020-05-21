@@ -13,15 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
 from django.contrib import admin
+from django.urls import path
 
 from myapp.views import IndexView, FooView, bar_view, FartView
+from cache_helpers.decorators import cache_page
+from myapp.caches import get_cache_key_by_view
+
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^foo/', FooView.as_view(), name='foo'),
-    url(r'^fart/', FartView.as_view(), name='fart'),
-    url(r'^bar/', bar_view, name='bar'),
-    url(r'^$', IndexView.as_view(), name='index'),
+    path('admin/', admin.site.urls),
+    path('foo/<int:id>/', FooView.as_view(), name='foo'),
+    path('fart/<int:id>/', FartView.as_view(), name='fart'),
+    path('bar/<int:id>/', bar_view, name='bar'),
+    path('', cache_page(3, key_func=get_cache_key_by_view)(IndexView.as_view()), name='index'),
 ]

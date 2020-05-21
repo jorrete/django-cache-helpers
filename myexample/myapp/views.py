@@ -5,6 +5,8 @@ from django.shortcuts import render
 from cache_helpers.decorators import cache_page_forever
 from cache_helpers.views import CachePageMixin
 
+from myapp.caches import get_cache_key_by_path
+
 
 class Mixin(object):
     def get_context_data(self, **kwargs):
@@ -23,12 +25,8 @@ class IndexView(Mixin, TemplateView):
     }
 
 
-def get_cache_key(request, *args):
-    return request.path
-
-
 def my_cache(*args, **kwargs):
-    return cache_page_forever(15, key_func=get_cache_key)
+    return cache_page_forever(15, key_func=get_cache_key_by_path)
 
 
 @method_decorator(my_cache(), name='dispatch')
@@ -51,7 +49,7 @@ class FartView(CachePageMixin, Mixin, TemplateView):
 
 
 @my_cache()
-def bar_view(request):
+def bar_view(request, id, *args, **kwargs):
     return render(request, 'myapp/index.html', context={
         'title': 'Bar',
         'user': request.user,

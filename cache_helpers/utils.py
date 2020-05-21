@@ -54,3 +54,18 @@ def threaded_cue(cue, callback, threads):
         t.join()
 
     return cue
+
+
+def get_decorator_ref(view):
+    return (
+        view.__self__.__class__  # class mixin
+        if hasattr(view, '__self__') else
+        view.func.__self__.__class__  # method decorator
+        if hasattr(view, 'func') else
+        view  # func decorator
+    )
+
+
+def view_to_string(view):
+    ref = get_decorator_ref(view)
+    return '{}.{}'.format(ref.__module__, ref.__name__)

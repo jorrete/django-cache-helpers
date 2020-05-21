@@ -1,11 +1,12 @@
 import time
+import inspect
 from functools import wraps
 
 from django.core.cache import caches
 from django.utils.cache import add_never_cache_headers, patch_response_headers
 from django.utils.http import http_date
 
-from .utils import check_bust_header
+from .utils import check_bust_header, view_to_string
 from .settings import CACHE_HELPERS_ALIAS, logger
 
 
@@ -17,9 +18,17 @@ def _cache_page(timeout,
     def _cache(view_func):
         @wraps(view_func)
         def __cache(request, *args, **kwargs):
+            args = list(args)
+            for arg in inspect.getfullargspec(view_func).args:
+                if arg in ['self', 'request']:
+                    continue
+                args.append(kwargs.pop(arg))
+            args = tuple(args)
+
             _cache_alias = cache_alias if cache_alias is not None else CACHE_HELPERS_ALIAS
             cache = caches[_cache_alias]
-            cache_key = key_func(request)
+            view_path = view_to_string(view_func)
+            cache_key = key_func(request, *args, view_path=view_path, **kwargs)
             response = cache.get(cache_key)
 
             do_cache = (
@@ -27,15 +36,22 @@ def _cache_page(timeout,
                 or (check_func is not None and check_func(request))
                 or getattr(request, '_bust_cache', False))
 
-            logger.debug(
-                'cache: {} | cache_key: {} | timeout: {} | response: {} | check_func: {} | _bust_cache: {} | SAVE: {}'.format(
-                    cache,
-                    cache_key,
-                    timeout,
-                    response,
-                    (check_func is not None and check_func(request)),
-                    getattr(request, '_bust_cache', False),
-                    do_cache))
+            logger.debug('\n'.join([
+                '######## cache ########',
+                'cache_alias: {}'.format(_cache_alias),
+                'cache: {}'.format(cache),
+                'cache_key: {}'.format(cache_key),
+                'timeout: {}'.format(timeout),
+                'response: {}'.format(response),
+                'check_func: {}'.format((check_func is not None and check_func(request))),
+                'bust_cache: {}'.format(getattr(request, '_bust_cache', False)),
+                'args: {}'.format(args),
+                'kwargs: {}'.format(kwargs),
+                'view_path: {}'.format(view_path),
+                'SAVE: {}'.format(do_cache),
+                '#######################',
+            ]))
+
             if do_cache:
                 response = view_func(request, *args, **kwargs)
                 if response.status_code == 200:
