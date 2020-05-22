@@ -159,7 +159,7 @@ CACHES = {
     },
 }
 
-# if DEBUG:
-#     CACHES['default'] = {
-#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#     }
+if DEBUG:
+    CACHES['default'] = {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }

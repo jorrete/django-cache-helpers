@@ -3,7 +3,10 @@ import threading
 
 from django.core.cache import caches
 
-from .settings import CACHE_HELPERS_ALIAS, CACHE_HELPERS_KEY
+from .settings import CACHE_HELPERS_ALIAS
+
+
+CACHE_HELPERS_KEY = 'cache_helpers_key'
 
 
 def set_cache_bust_status(bust_key=None):

@@ -22,7 +22,8 @@ def _cache_page(timeout,
             for arg in inspect.getfullargspec(view_func).args:
                 if arg in ['self', 'request']:
                     continue
-                args.append(kwargs.pop(arg))
+                if arg in kwargs:
+                    args.append(kwargs.pop(arg))
             args = tuple(args)
 
             _cache_alias = cache_alias if cache_alias is not None else CACHE_HELPERS_ALIAS

@@ -10,7 +10,6 @@ setup(name='django-cache-helpers',
       packages=['cache_helpers', ],
       include_package_data=True,
       install_requires=[
-          'Django>=2.1',
-          'requests>=2.23',
+          'requests',
       ],
       zip_safe=False)
