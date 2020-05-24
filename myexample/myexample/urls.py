@@ -24,7 +24,7 @@ from myapp.caches import get_cache_key_by_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('foo/<int:id>/', FooView.as_view(), name='foo'),
-    path('fart/<int:id>/', FartView.as_view(), name='fart'),
     path('bar/<int:id>/', bar_view, name='bar'),
+    path('fart/<int:id>/', FartView.as_view(), name='fart'),
     path('', cache_page(3, key_func=get_cache_key_by_view)(IndexView.as_view()), name='index'),
 ]

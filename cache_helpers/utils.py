@@ -59,16 +59,36 @@ def threaded_cue(cue, callback, threads):
     return cue
 
 
-def get_decorator_ref(view):
-    return (
-        view.__self__.__class__  # class mixin
-        if hasattr(view, '__self__') else
-        view.func.__self__.__class__  # method decorator
-        if hasattr(view, 'func') else
-        view  # func decorator
-    )
+def get_ref_from_func(func):
+    if hasattr(func, '__self__'):
+        return func.__self__.__class__
+    return func
 
 
-def view_to_string(view):
-    ref = get_decorator_ref(view)
-    return '{}.{}'.format(ref.__module__, ref.__name__)
+def get_func_from_func(func):
+    if hasattr(func, '__wrapped__'):
+        return func.__wrapped__
+    return func
+
+
+def func_to_string(func):
+    func = func.func if hasattr(func, 'func') else func
+
+    ref = get_ref_from_func(func)
+
+    chunks = [
+        ref.__module__,
+        ref.__name__,
+    ]
+
+    func = get_func_from_func(func)
+
+    if func.__name__ != chunks[-1]:
+        chunks.append(func.__name__)
+
+    return '.'.join(chunks)
+
+
+def invalidate_cache(cache_key, cache=None):
+    cache = caches[cache if cache is not None else CACHE_HELPERS_ALIAS]
+    cache.delete(cache_key)
