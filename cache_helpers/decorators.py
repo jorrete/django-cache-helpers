@@ -96,10 +96,8 @@ def cache_result(timeout, cache_alias=None):
     def _cache(view_func):
         @wraps(view_func)
         def __cache(*args, **kwargs):
-            print(args, kwargs)
             _cache_alias = cache_alias if cache_alias is not None else CACHE_HELPERS_ALIAS
             cache = caches[_cache_alias]
-            # func_path = func_to_string(view_func)
             func_path = func_to_string(view_func)
             cache_key = (func_path, args, kwargs, )
             cache_key_p = pickle.dumps((func_path, args, kwargs, ))
