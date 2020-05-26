@@ -1,4 +1,3 @@
-import pickle
 import time
 import inspect
 from functools import wraps
@@ -34,7 +33,7 @@ def _cache_page(timeout,
             response = cache.get(cache_key)
 
             do_cache = (
-                not response
+                response is None
                 or (check_func is not None and check_func(request))
                 or getattr(request, '_bust_cache', False))
 
@@ -99,11 +98,10 @@ def cache_result(timeout, cache_alias=None):
             _cache_alias = cache_alias if cache_alias is not None else CACHE_HELPERS_ALIAS
             cache = caches[_cache_alias]
             func_path = func_to_string(view_func)
-            cache_key = (func_path, args, kwargs, )
-            cache_key_p = pickle.dumps((func_path, args, kwargs, ))
-            result = cache.get(cache_key_p)
+            cache_key = '.'.join([str(c) for c in (func_path, args, kwargs,)])
+            result = cache.get(cache_key)
             bust_cache = kwargs.pop('bust_cache', False)
-            do_cache = (not result or bust_cache)
+            do_cache = (result is None or bust_cache)
 
             logger.debug('\n'.join([
                 '######## cache ########',
@@ -122,7 +120,7 @@ def cache_result(timeout, cache_alias=None):
 
             if do_cache:
                 result = view_func(*args, **kwargs)
-                cache.set(cache_key_p, result, timeout)
+                cache.set(cache_key, result, timeout)
             return result
         return __cache
     return _cache
